@@ -1,4 +1,4 @@
-with dim_customers as (
+with customers as (
     select
         customer_id,
         customer_zip_code_prefix,
@@ -6,7 +6,7 @@ with dim_customers as (
         customer_state
     from {{ ref('stg__customers') }}
 ),
-dim_orders as (
+orders as (
     select 
         order_id,
         customer_id,
@@ -26,15 +26,36 @@ order_payments as (
         payment_value
     from {{ ref('stg__order_payments') }}
 ),
+payments as (
+    select 
+        o.order_id,
+        op.payment_method,
+        op.payment_installments,
+        sum(payment_value) as total_payment_values,
+        min(payment_value) as min_payment_values,
+        max(payment_value) as max_payment_values,
+        count(*) as total_count_of_payment_values,
+        avg(payment_value) as avg_payment_values
+    from orders o
+    left join order_payments op on o.order_id = op.order_id
+    group by o.order_id,op.payment_method,op.payment_installments
+),
 fct_orders as (
     select 
         o.order_id,
         o.customer_id,
-        op.payment_method,
-        op.payment_installments,
-        op.payment_value
-    from dim_customers c
-    left join dim_orders o on o.customer_id = c.customer_id
-    left join order_payments op on o.order_id = op.order_id
+        o.order_status,
+        o.order_purchase_date,
+        o.order_approved_date,
+        o.order_delivered_carrier_date,
+        o.order_delivered_customer_date,
+        o.order_estimated_delivery_date,
+        p.total_payment_values,
+        p.min_payment_values,
+        p.max_payment_values,
+        p.total_count_of_payment_values,
+        p.avg_payment_values
+    from orders o
+    left join payments p on o.order_id = p.order_id
 )
 select * from fct_orders
