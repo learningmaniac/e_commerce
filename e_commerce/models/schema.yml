@@ -33,14 +33,28 @@ models:
         description: "The date of the customer's first order."
       - name: last_order_date
         description: "The date of the customer's last order."
+      - name: customer_lifetime_value
+        description: "The predicted lifetime value of the customer based on their order history and payment behavior."
+      - name: payment_methods
+        description: "The most frequently used payment method by the customer."
+      - name: total_credit_card_orders
+        description: "The total number of orders paid with a credit card by the customer."
+      - name: total_boleto_orders
+        description: "The total number of orders paid with boleto by the customer."
+      - name: total_debit_card_orders
+        description: "The total number of orders paid with a debit card by the customer."
+      - name: total_voucher_orders
+        description: "The total number of orders paid with a voucher by the customer."
+      - name: total_payment_not_defined_orders
+        description: "The total number of orders with an undefined payment method by the customer."
   - name: fct_orders
     description: "This is the fact table for orders. It contains information about each order, such as order ID, customer ID, order status, and payment details."
     columns:
       - name: order_id
         description: "The unique identifier for each order."
         tests:
-          - unique
           - not_null
+          - unique
       - name: customer_id
         description: "The unique identifier for the customer who placed the order."
         tests:
@@ -78,3 +92,19 @@ models:
         description: "The date when the order was delivered to the customer."
       - name: order_estimated_delivery_date
         description: "The estimated delivery date for the order."
+      - name: payment_method
+        description: "The method of payment used for the order (e.g., credit card, boleto)."
+      - name: total_payment_value
+        description: "The total value of payments made for the order."
+      - name: total_payment_installments
+        description: "The total number of payment installments for the order."
+      - name: first_payment_date
+        description: "The date of the first payment made for the order."
+      - name: last_payment_date
+        description: "The date of the last payment made for the order."
+      - name: avg_payment_value
+        description: "The average value of payments made for the order."
+      - name: min_payment_value
+        description: "The minimum value of any single payment made for the order."
+      - name: max_payment_value
+        description: "The maximum value of any single payment made for the order."

@@ -29,16 +29,15 @@ order_payments as (
 payments as (
     select 
         o.order_id,
-        op.payment_method,
-        op.payment_installments,
         sum(payment_value) as total_payment_values,
         min(payment_value) as min_payment_values,
         max(payment_value) as max_payment_values,
         count(*) as total_count_of_payment_values,
-        avg(payment_value) as avg_payment_values
+        avg(payment_value) as avg_payment_values,
+        listagg(payment_method, ', ') as payment_methods
     from orders o
     left join order_payments op on o.order_id = op.order_id
-    group by o.order_id,op.payment_method,op.payment_installments
+    group by o.order_id
 ),
 fct_orders as (
     select 
@@ -50,6 +49,7 @@ fct_orders as (
         o.order_delivered_carrier_date,
         o.order_delivered_customer_date,
         o.order_estimated_delivery_date,
+        p.payment_methods,
         p.total_payment_values,
         p.min_payment_values,
         p.max_payment_values,
